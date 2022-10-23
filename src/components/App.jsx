@@ -1,75 +1,64 @@
-import React from "react";
-import { Section } from "./Section";
-import { FeedbackOptions } from "./Feedback";
-import { Statistics } from "./Statistics";
-import { Notification } from "./Notifications";
+import React, {Component} from 'react';
+import {ContactForm} from "./ContactForm/ContactForm";
+import {ContactsList} from "./ContactsList/ContactsList";
+import { Filter } from './filter/Filter';
 
-export class App extends React.Component {
+export class App extends Component {
    state = {
-      good:0,
-      neutral:0,
-      bad:0,
-   };
-   ///////////////Count Total Feedback
- total = () => {
-   return this.state.good + this.state.neutral + this.state.bad;
- };
-// //////Count Total Positive Percentage
-countPositivePercentage = () => {
-   let percentage = Math.floor(
-     ((this.state.good / this.total()) * 100).toFixed(0)
-   );
-   if (isNaN(percentage)) {
-     return 0;
-   } else return percentage;
- };
-//
-reviewClick = whichButtonWasClicked => {
-   switch (whichButtonWasClicked) {
-     case 'good':
-       this.setState(state => ({ good: state.good + 1 }));
-       break;
-     case 'neutral':
-       this.setState(state => ({ neutral: state.neutral + 1 }));
-       break;
-     case 'bad':
-       this.setState(state => ({ bad: state.bad + 1 }));
-       break;
-     default:
-       return 0;
-   }
- };
-////////////////////    RENDER   ////////////
-   render(){
-      const {good,neutral,bad}= this.state;
-         return(
-            <div style={{
-               height: '100%',
-               display: 'flex',
-               justifyContent: 'center',
-               alignItems: 'flex-start',
-               flexDirection: 'column',
-               fontSize: 40,
-               color: '#010101',
-               padding: '20px 10px',
-            }}>
-               <Section title='Please leave your feedback'>
-                  <FeedbackOptions options={Object.keys(this.state)} onLeaveFeedback={this.reviewClick} >
-                  </FeedbackOptions>
-               </Section>
-               <Section title="Statistics">
-                  {this.total() ===0 
-                  ?( <Notification message='There is no feedback'></Notification>)
-                  :( <Statistics good={good} neutral={neutral} bad={bad} total={this.total()} 
-                  positivefeedback={this.countPositivePercentage()}>
-                  </Statistics> )}
-               </Section>
+      contacts: [
+        {id: 'id-1', name: 'Rosie Simpson', phone: '459-12-56'},
+        {id: 'id-2', name: 'Hermione Kline', phone: '443-89-12'},
+        {id: 'id-3', name: 'Eden Clements', phone: '645-17-79'},
+        {id: 'id-4', name: 'Annie Copeland', phone: '227-91-26'},
+      ],
+      filter: '',
+      name: '',
+      phone: ''
+    }
 
-            </div>
+   handleAddContact = (newContact) =>
+      this.setState(({contacts}) =>({
+         contacts:[...contacts, newContact],
+   }))
+
+   handleCheckUnique = (name) =>{
+      const{ contacts } = this.state
+
+      const isExistContact = !!contacts.find((contact) => contact.name === name)
+      isExistContact && alert ('Contact is alredy exist')
+      return !isExistContact 
+   }
+ 
+   handleRemoveContact = (id) => 
+      this.setState(({ contacts })=>({contacts: contacts.filter((contact) => contact.id !==id) }))
+   
+   handleFilterChange = (filter) => this.setState({ filter })
+
+   getVisibleContacts = () => {
+      const { contacts, filter } = this.state;
+      return contacts.filter((contact) => contact.name.toLowerCase().includes( filter.toLowerCase() ))
+   }
+   render(){
+      const { filter } = this.state
+      const visibleContacts = this.getVisibleContacts()
+      return(
+         <div style={{
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            flexDirection: 'column',
+            fontSize: 20,
+            color: '#010101',
+            padding: '20px 10px',
+          }}>
+         <h2>Form Contact</h2>  
+         <ContactForm onAdd={this.handleAddContact} onCheckUnique = {this.handleCheckUnique}/>      
+         <h2>Contacts List</h2>
+         <Filter filter={filter} onChange={this.handleFilterChange}/>
+         <ContactsList contacts={visibleContacts} onRemove = {this.handleRemoveContact}/>
+         </div>
          )
    }
 
-
-
 }
-
