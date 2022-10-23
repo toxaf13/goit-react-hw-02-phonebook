@@ -43,7 +43,13 @@ export class ContactForm extends Component{
       return(
          <form onSubmit={this.handleFormSubmit}>
             <input type='text' name='name' placeholder='Enter Name' value={name} onChange = {this.handleChangeForm}/>
-            <input type='text' name='phone' placeholder='Enter phone Number' value={phone} onChange = {this.handleChangeForm} />
+            <input type='tel' name='phone' 
+                  pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+                  title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+                  required
+                  placeholder='Enter Number'
+                  value={phone} 
+                  onChange = {this.handleChangeForm} />
             <button type='submit'>Add Contact</button>
          </form>
       )
